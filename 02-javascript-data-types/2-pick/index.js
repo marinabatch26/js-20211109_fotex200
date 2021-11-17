@@ -7,14 +7,11 @@
 export const pick = (obj, ...fields) => {
   const result = {};
 
-  for (const field of fields) {
-    Object.entries(obj).map(([key, value]) => {
-
-      if (key === field) {
-        result[key] = value;
-      }
-    })
-  }
+  for (const [key, value] of Object.entries(obj)) {
+    if (fields.includes(value)) {
+      result[key] = value
+    }
+  };
 
   return result;
 };
