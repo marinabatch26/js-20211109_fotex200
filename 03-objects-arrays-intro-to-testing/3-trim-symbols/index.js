@@ -22,7 +22,6 @@ export function trimSymbols(string, size) {
     }
 
     if (counter <= size) {
-      console.log(counter)
       result += string[i];
     }
   }
