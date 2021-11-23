@@ -2,13 +2,12 @@ export default class ColumnChart {
   constructor(options = {}) {
     this.options = options;
     this.chartHeight = 50;
-
     this.render();
   }
 
   render() {
     const { data = [], label, value, link, formatHeading = (value) => value} = this.options;
-    const loading = this.isLoading(data);
+    const loading = (data.length === 0) ? true : false;
 
     const element = document.createElement('div');
     element.className = `${loading ? 'column-chart column-chart_loading' : 'column-chart'}`
@@ -25,10 +24,6 @@ export default class ColumnChart {
 
     this.element = element;
     this.renderBody(data);
-  }
-
-  isLoading(data) {
-    return (data !== undefined && data.length === 0) ? true : false;
   }
 
   renderBody(data) {
@@ -64,6 +59,7 @@ export default class ColumnChart {
   }
 
   destroy() {
+    return this.element.remove();
     // ? тесты требовали, возможно что то не дописал, но вроде как работает
   }
 
