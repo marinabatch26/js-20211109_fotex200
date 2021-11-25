@@ -1,4 +1,8 @@
 export default class ColumnChart {
+  element;
+  subElements = {};
+  chartHeight = 50;
+
   constructor({
     data = [],
     label = '',
@@ -11,7 +15,6 @@ export default class ColumnChart {
     this.link = link;
     this.value = value;
     this.formatHeading = formatHeading(value);
-    this.chartHeight = 50;
     this.render();
   }
 
@@ -50,7 +53,6 @@ export default class ColumnChart {
 
     for (const subElement of elements) {
       const name = subElement.dataset.element;
-
       result[name] = subElement;
     }
 
@@ -58,26 +60,18 @@ export default class ColumnChart {
   }
 
   renderBody(data) {
-    const columnProps = this.getColumnProps(data);
-    return data.map((item, index) => {
-      return item = `<div style="--value: ${columnProps[index].value}" data-tooltip="${columnProps[index].percent}"></div>`;
+    const maxValue = Math.max(...data);
+    const scale = 50 / maxValue;
+
+    return data.map((item) => {
+      const percent = (item / maxValue * 100).toFixed(0) + '%';
+
+      return item = `<div style="--value: ${Math.floor(item * scale)}" data-tooltip="${percent}"></div>`;
     }).join('');
   }
 
   renderLink() {
     return this.link ? `<a href="${this.link}" class="column-chart__link">View All</a>` : '';
-  }
-
-  getColumnProps(data) {
-    const maxValue = Math.max(...data);
-    const scale = 50 / maxValue;
-
-    return data.map(item => {
-      return {
-        percent: (item / maxValue * 100).toFixed(0) + '%',
-        value: String(Math.floor(item * scale))
-      };
-    });
   }
 
   update(data) {
@@ -86,9 +80,13 @@ export default class ColumnChart {
 
   destroy() {
     return this.remove();
+    this.element = null;
+    this.subElements = {};
   }
 
   remove() {
-    return this.element.remove();
+    if (this.element) {
+      return this.element.remove();
+    }
   }
 }
