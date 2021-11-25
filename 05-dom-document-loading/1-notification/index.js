@@ -32,6 +32,7 @@ export default class NotificationMessage {
   }
 
   show(el = document.body) {
+    // ничего умнее не придумал, как обратиться к ДОМ, буду ждать разбора =\
     const notificationExist = document.querySelector('.notification');
 
     if (notificationExist) {
