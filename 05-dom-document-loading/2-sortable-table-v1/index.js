@@ -83,24 +83,23 @@ export default class SortableTable {
   }
 
   getTableBody(data) {
-    return data.map(({
-      title = '',
-      images = [],
-      quantity = 0,
-      price = 0,
-      sales = 0
-    } = productData) => {
-      const productImageUrl = images[0]?.url || '';
+    // уверен тут, что то страшное делаю)) буду смотреть ответ на лекции после ревью
+    return data.map((productData) => {
+      const productDataKeys = Object.keys(productData);
+      const productCellArray = [];
+
+      for (const { id, template = null } of this.headerConfig) {
+        if (productDataKeys.includes(id)) {
+          const productCell = template ? template(productData[id])
+            : `<div class="sortable-table__cell">${productData[id]}</div>`;
+
+          productCellArray.push(productCell);
+        }
+      }
+
       return `
         <a href="#" class="sortable-table__row">
-          <div class="sortable-table__cell">
-            <img class="sortable-table-image" alt="Image" src="${productImageUrl}">
-          </div>
-          <div class="sortable-table__cell">${title}</div>
-
-          <div class="sortable-table__cell">${quantity}</div>
-          <div class="sortable-table__cell">${price}</div>
-          <div class="sortable-table__cell">${sales}</div>
+          ${productCellArray.join('')}
         </a>
       `
     }).join('');
