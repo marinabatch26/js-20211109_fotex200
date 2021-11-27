@@ -29,7 +29,7 @@ export default class SortableTable {
     this.subElements = this.getSubElements(this.element);
   }
 
-  sort(field = '', order = 'asc') {
+  sort(field = '', order) {
     const directions = {
       'asc': 1,
       'desc': -1
