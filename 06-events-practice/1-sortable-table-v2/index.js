@@ -10,6 +10,7 @@ export default class SortableTable {
 
     const id = sortableCell.dataset.id;
     const order = e.currentTarget.querySelectorAll('[data-order="asc"]').length ? 'desc' : 'asc';
+
     this.sort(id, order);
   }
 
@@ -77,7 +78,7 @@ export default class SortableTable {
   }
 
   addEventListners() {
-    this.subElements.header.addEventListener('click', this.onClickSort)
+    this.subElements.header.addEventListener('pointerdown', this.onClickSort)
   }
 
   getTableHeader() {
@@ -104,7 +105,6 @@ export default class SortableTable {
   }
 
   getTableBody(data) {
-    // уверен тут, что то страшное делаю)) буду смотреть ответ на лекции после ревью
     return data.map((productData) => {
       const productDataKeys = Object.keys(productData);
       const productCellArray = [];
@@ -140,7 +140,7 @@ export default class SortableTable {
 
   destroy() {
     return this.remove();
-    this.removeEventListener('click', this.onClickSort);
+    this.removeEventListener('pointerdown', this.onClickSort);
     this.element = null;
     this.subElements = {};
   }
