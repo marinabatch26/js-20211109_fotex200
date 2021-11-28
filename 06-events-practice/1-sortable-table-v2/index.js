@@ -9,8 +9,7 @@ export default class SortableTable {
     if (sortableCell.dataset.sortable === 'false') return;
 
     const id = sortableCell.dataset.id;
-    const order = (sortableCell.dataset.order === undefined || sortableCell.dataset.order !== 'asc') ? 'asc' : 'desc';
-
+    const order = e.currentTarget.querySelectorAll('[data-order="asc"]').length ? 'desc' : 'asc';
     this.sort(id, order);
   }
 
