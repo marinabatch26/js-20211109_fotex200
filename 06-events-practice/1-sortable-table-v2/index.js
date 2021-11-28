@@ -1,5 +1,6 @@
 export default class SortableTable {
   subElements = {};
+  isSortLocally = true;
   onClickSort = (e) => {
     if (!e.target.closest('.sortable-table__cell')) return;
 
@@ -48,7 +49,15 @@ export default class SortableTable {
     this.subElements = this.getSubElements(this.element);
   }
 
-  sort(field = '', order) {
+  sort(field, order) {
+    if (this.isSortLocally) {
+      this.sortOnClient(field, order);
+    } else {
+      this.sortOnServer();
+    }
+  }
+
+  sortOnClient(field, order) {
     const directions = {
       'asc': 1,
       'desc': -1
@@ -67,6 +76,10 @@ export default class SortableTable {
 
     this.subElements.body.innerHTML = this.getTableBody(sortedData);
     this.setHeaderDirectionArrow(field, order);
+  }
+
+  sortOnServer() {
+    //TODO: Future homework
   }
 
   setHeaderDirectionArrow(field, order) {
