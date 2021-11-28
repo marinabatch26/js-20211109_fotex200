@@ -106,24 +106,28 @@ export default class SortableTable {
 
   getTableBody(data) {
     return data.map((productData) => {
-      const productDataKeys = Object.keys(productData);
-      const productCellArray = [];
-
-      for (const { id, template = null } of this.headerConfig) {
-        if (productDataKeys.includes(id)) {
-          const productCell = template ? template(productData[id])
-            : `<div class="sortable-table__cell">${productData[id]}</div>`;
-
-          productCellArray.push(productCell);
-        }
-      }
-
       return `
         <a href="#" class="sortable-table__row">
-          ${productCellArray.join('')}
+          ${this.getTableBodyCell(productData)}
         </a>
       `
     }).join('');
+  }
+
+  getTableBodyCell(productData) {
+    const productDataKeys = Object.keys(productData);
+    const productCellArray = [];
+
+    for (const { id, template = null } of this.headerConfig) {
+      if (productDataKeys.includes(id)) {
+        const productCell = template ? template(productData[id])
+          : `<div class="sortable-table__cell">${productData[id]}</div>`;
+
+        productCellArray.push(productCell);
+      }
+    }
+
+    return productCellArray.join('');
   }
 
   getSubElements(element) {
