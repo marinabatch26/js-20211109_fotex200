@@ -1,4 +1,6 @@
 export default class NotificationMessage {
+  static activeNotification;
+
   constructor(message = '', {
     duration = 1000,
     type = ''
@@ -32,15 +34,14 @@ export default class NotificationMessage {
   }
 
   show(el = document.body) {
-    // ничего умнее не придумал, как обратиться к ДОМ, буду ждать разбора =\
-    const notificationExist = document.querySelector('.notification');
-
-    if (notificationExist) {
-      notificationExist.remove();
-    };
+    if (NotificationMessage.activeNotification) {
+      NotificationMessage.activeNotification.remove();
+    }
 
     el.append(this.element);
     setTimeout(() => this.destroy(), this.duration);
+
+    NotificationMessage.activeNotification = this;
   }
 
   destroy() {
