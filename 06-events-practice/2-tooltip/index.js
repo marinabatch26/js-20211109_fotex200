@@ -19,11 +19,11 @@ class Tooltip {
   }
 
   constructor() {
-    if (!Tooltip.instance) {
-      Tooltip.instance = this;
+    if (!Tooltip._instance) {
+      Tooltip._instance = this;
     }
 
-    return Tooltip.instance;
+    return Tooltip._instance;
   }
 
   render(message) {
