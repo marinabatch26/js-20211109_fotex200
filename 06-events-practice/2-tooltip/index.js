@@ -51,11 +51,11 @@ class Tooltip {
   }
 
   destroy() {
-    return this.remove();
     document.removeEventListener('pointerover', this.showTooltip);
     document.removeEventListener('pointerout', this.hideTooltip);
     document.removeEventListener('pointerout', this.calcTooltipPosition);
     this.element = null;
+    return this.remove();
   }
 }
 

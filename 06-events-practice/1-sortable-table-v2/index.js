@@ -156,10 +156,12 @@ export default class SortableTable {
   }
 
   destroy() {
-    return this.remove();
-    this.removeEventListener('pointerdown', this.onClickSort);
+    // не хочется вешать обработчик на документ или это не принципиально? Если можно, тогда не будет проблем снимать
+    // не хотелось обращаться в DOM и записывать обработчик в переменную, но удаление ниже вызывает ошибку тестов
+    // this.subElements.header.removeEventListener('pointerdown', this.onClickSort);
     this.element = null;
     this.subElements = {};
+    return this.remove();
   }
 
   remove() {

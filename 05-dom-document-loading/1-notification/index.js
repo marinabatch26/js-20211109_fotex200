@@ -45,9 +45,9 @@ export default class NotificationMessage {
   }
 
   destroy() {
-    return this.remove();
     this.element = null;
     this.subElements = {};
+    return this.remove();
   }
 
   remove() {
