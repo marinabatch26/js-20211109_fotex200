@@ -21,23 +21,20 @@ export default class ColumnChart {
     this.label = label;
     this.link = link;
     this.formatHeading = formatHeading;
-
-
     this.render();
-    this.data = this.loadData(from, to);
+    this.loadData(from, to);
   }
 
   async loadData(from, to) {
-    // const response = await fetchJson(`${BACKEND_URL}/${this.url}?from=${from.toISOString()}&to=${to.toISOString()}`);
-    const response = await fetchJson(`${BACKEND_URL}/${this.url}?from=${from}&to=${to}`);
+    const response = await fetchJson(`${BACKEND_URL}/${this.url}?from=${from.toISOString()}&to=${to.toISOString()}`);
 
     if (Object.keys(response).length) {
       this.element.classList.remove('column-chart_loading');
     }
 
     const total = Object.values(response).reduce((acc, item) => acc + item, 0);
-    this.subElements.header.innerHTML = this.formatHeading(total);
-    this.subElements.body.innerHTML = this.renderBody(Object.values(response));
+    this.renderHeading(total);
+    this.renderBody(Object.values(response));
   }
 
   get template() {
@@ -55,6 +52,10 @@ export default class ColumnChart {
         </div>
       </div>
     `;
+  }
+
+  renderHeading(total) {
+    this.subElements.header.innerHTML = this.formatHeading(total);
   }
 
   render() {
@@ -80,7 +81,7 @@ export default class ColumnChart {
     const maxValue = Math.max(...data);
     const scale = 50 / maxValue;
 
-    return this.subElements.body.innerHTML = data.map((item) => {
+    this.subElements.body.innerHTML = data.map((item) => {
       const percent = (item / maxValue * 100).toFixed(0) + '%';
 
       return item = `<div style="--value: ${Math.floor(item * scale)}" data-tooltip="${percent}"></div>`;
