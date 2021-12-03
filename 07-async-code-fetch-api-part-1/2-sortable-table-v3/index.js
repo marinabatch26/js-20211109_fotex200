@@ -23,9 +23,9 @@ export default class SortableTable {
     url = ''
   } = {}) {
     this.headerConfig = headerConfig;
-
+    this.data = [];
     this.render();
-    this.res = this.loadData(url)
+    this.loadData(url);
     this.addEventListners();
 
   }
@@ -38,7 +38,7 @@ export default class SortableTable {
     this.getTableBody(res)
 
 
-
+    this.data = res;
     console.log(res);
 
     return res;
@@ -86,10 +86,9 @@ export default class SortableTable {
 
     const fieldSortType = this.headerConfig.find(item => item.id === field);
     const direction = directions[order];
-    this.res.then((data) => {
-      const sortedData =  [...data].sort(sortTypeObj[fieldSortType?.sortType]);
-      this.getTableBody(sortedData);
-    })
+    const sortedData = [...this.data].sort(sortTypeObj[fieldSortType?.sortType]);
+    this.getTableBody(sortedData);
+
 
     //
 
