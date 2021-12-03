@@ -9,35 +9,35 @@ export default class ColumnChart {
 
   constructor({
     url = '',
-    range = {},
-    data = [],
+    range: {
+      from,
+      to
+    } = {},
     label = '',
     link = '',
-    value = 0,
     formatHeading = (value) => value
   } = {}) {
     this.url = url;
-    this.data = data;
     this.label = label;
     this.link = link;
+    this.formatHeading = formatHeading;
 
 
-    this.data = this.loadData(range.from, range.to);
-    // this.formatHeading = formatHeading(value);
     this.render();
-
+    this.data = this.loadData(from, to);
   }
 
   async loadData(from, to) {
+    // const response = await fetchJson(`${BACKEND_URL}/${this.url}?from=${from.toISOString()}&to=${to.toISOString()}`);
     const response = await fetchJson(`${BACKEND_URL}/${this.url}?from=${from}&to=${to}`);
-    const dataValuesArr = Object.values(response);
-    const total = dataValuesArr.reduce((acc, item) => acc + item, 0);
-    return {
-      response,
-      dataValuesArr,
-      total,
-      arr: Object.entries(response)
+
+    if (Object.keys(response).length) {
+      this.element.classList.remove('column-chart_loading');
     }
+
+    const total = Object.values(response).reduce((acc, item) => acc + item, 0);
+    this.subElements.header.innerHTML = this.formatHeading(total);
+    this.subElements.body.innerHTML = this.renderBody(Object.values(response));
   }
 
   get template() {
@@ -49,36 +49,18 @@ export default class ColumnChart {
         </div>
         <div class="column-chart__container">
           <div data-element="header" class="column-chart__header">
-            ${this.data.then(({ total } = data) => {
-              console.log(total);
-              this.formatHeading(total);
-            })}
           </div>
           <div data-element="body" class="column-chart__chart">
-            ${this.data.then(({ dataValuesArr } = data) => {
-              this.renderBody(dataValuesArr);
-            })}
           </div>
         </div>
       </div>
     `;
   }
 
-  formatHeading(value) {
-    this.subElements.header.innerHTML = value;
-  }
-
   render() {
     const element = document.createElement('div');
     element.innerHTML = this.template;
     this.element = element.firstElementChild;
-
-    this.data.then(({ dataValuesArr } = data) => {
-      if (dataValuesArr.length) {
-        this.element.classList.remove('column-chart_loading');
-      }
-    })
-
     this.subElements = this.getSubElements(this.element);
   }
 
@@ -95,14 +77,14 @@ export default class ColumnChart {
   }
 
   renderBody(data = []) {
-      const maxValue = Math.max(...data);
-      const scale = 50 / maxValue;
+    const maxValue = Math.max(...data);
+    const scale = 50 / maxValue;
 
-      this.subElements.body.innerHTML = data.map((item) => {
-        const percent = (item / maxValue * 100).toFixed(0) + '%';
+    return this.subElements.body.innerHTML = data.map((item) => {
+      const percent = (item / maxValue * 100).toFixed(0) + '%';
 
-        return item = `<div style="--value: ${Math.floor(item * scale)}" data-tooltip="${percent}"></div>`;
-      }).join('');
+      return item = `<div style="--value: ${Math.floor(item * scale)}" data-tooltip="${percent}"></div>`;
+    }).join('');
   }
 
   renderLink() {
@@ -110,10 +92,7 @@ export default class ColumnChart {
   }
 
   update(from, to) {
-    this.loadData(from, to).then(data => {
-
-      this.subElements.body.innerHTML = this.renderBody(data);
-    });
+    this.loadData(from, to);
   }
 
   destroy() {
