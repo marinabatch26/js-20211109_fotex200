@@ -92,8 +92,8 @@ export default class ColumnChart {
     return this.link ? `<a href="${this.link}" class="column-chart__link">View All</a>` : '';
   }
 
-  update(from, to) {
-    this.loadData(from, to);
+  async update(from, to) {
+    await this.loadData(from, to);
   }
 
   destroy() {
