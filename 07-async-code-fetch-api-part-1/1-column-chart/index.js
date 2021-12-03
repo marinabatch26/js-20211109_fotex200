@@ -30,11 +30,13 @@ export default class ColumnChart {
 
     if (Object.keys(response).length) {
       this.element.classList.remove('column-chart_loading');
-    }
+    };
 
     const total = Object.values(response).reduce((acc, item) => acc + item, 0);
     this.renderHeading(total);
     this.renderBody(Object.values(response));
+
+    return response;
   }
 
   get template() {
@@ -93,7 +95,7 @@ export default class ColumnChart {
   }
 
   async update(from, to) {
-    await this.loadData(from, to);
+    return await this.loadData(from, to);
   }
 
   destroy() {
