@@ -13,9 +13,10 @@ class Tooltip {
 
   calcTooltipPosition = (e) => {
     if (e.target.dataset.tooltip === undefined) return;
+    const TOOLTIP_MARGIN = 10;
 
-    this.element.style.left = `${e.clientX + 10}px`;
-    this.element.style.top = `${e.clientY + 10}px`;
+    this.element.style.left = `${e.clientX + TOOLTIP_MARGIN}px`;
+    this.element.style.top = `${e.clientY + TOOLTIP_MARGIN}px`;
   }
 
   constructor() {
@@ -27,7 +28,6 @@ class Tooltip {
   }
 
   render(message) {
-    // мы получается удаляем и пересоздаем элемент каждый раз по pointerover, решение не оптимально или это незначительно ?
     const element = document.createElement('div');
     element.innerHTML = `<div class="tooltip">${message}</div>`;
     this.element = element.firstElementChild;
