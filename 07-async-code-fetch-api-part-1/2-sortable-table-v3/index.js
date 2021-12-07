@@ -4,7 +4,31 @@ import fetchJson from './utils/fetch-json.js';
 const BACKEND_URL = 'https://course-js.javascript.ru';
 
 export default class SortableTable {
+  element;
   subElements = {};
+  data = [];
+  loading = false;
+  step = 20;
+  start = 1;
+  end = this.start + this.step;
+
+  onWindowScroll = async (ev) => {
+    const { bottom } = this.element.getBoundingClientRect();
+    const { id, order } = this.sorted;
+
+    if (bottom < document.documentElement.clientHeight && ! this.loading && !this.isSortLocally) {
+      this.start = this.end;
+      this.end = this.start + this.step;
+
+      this.loading = true;
+
+      const data = await this.loadData(id, order, this.start, this.end);
+      this.update(data);
+
+      this.loading = false;
+    }
+
+  }
 
   onClickSort = ev => {
     const sortableCell = ev.target.closest('.sortable-table__cell');
@@ -42,7 +66,7 @@ export default class SortableTable {
 
   constructor(headerConfig, {
     url = '',
-    isSortLocally = true,
+    isSortLocally = false,
     sorted = {
       id: headerConfig.find(item => item.sortable).id,
       order: 'asc',
@@ -52,10 +76,12 @@ export default class SortableTable {
     end = start + step
   } = {}) {
     this.headerConfig = headerConfig;
-    this.end = end;
     this.url = new URL(url, BACKEND_URL);
     this.sorted = sorted;
     this.isSortLocally = isSortLocally;
+    this.step = step;
+    this.start = start;
+    this.end = end;
 
     this.render();
   }
@@ -81,9 +107,12 @@ export default class SortableTable {
     this.getTableBody(sortedData);
   }
 
-  sortOnServer(field, order) {
-    console.log('server');
-    this.loadData(field, order);
+  async sortOnServer(id, order) {
+    const start = 1;
+    const end = start + this.step;
+    const data = await this.loadData(id, order, start, end);
+
+    this.getTableBody(data);
   }
 
   sortData(id, order) {
@@ -110,10 +139,10 @@ export default class SortableTable {
   get template() {
     return `
       <div class="sortable-table">
-        <div data-elem="header" class="sortable-table__header sortable-table__row">
+        <div data-element="header" class="sortable-table__header sortable-table__row">
           ${this.getTableHeader()}
         </div>
-        <div data-elem="body" class="sortable-table__body"></div>
+        <div data-element="body" class="sortable-table__body"></div>
       </div>
     `;
   }
@@ -131,6 +160,29 @@ export default class SortableTable {
     this.addEventListners();
   }
 
+  update(data) {
+    const rows = document.createElement('div');
+    this.data = [...this.data, ...data];
+    rows.innerHTML = this.getTableBody(data);
+
+    this.subElements.body.append(...rows.childNodes);
+  }
+
+  renderRows(data) {
+    if (data.length) {
+      this.element.classList.remove('sortable-table_empty');
+      this.addRows(data);
+    } else {
+      this.element.classList.add('sortable-table_empty');
+    }
+  }
+
+  addRows(data) {
+    this.data = data;
+
+    this.subElements.body.innerHTML = this.getTableBody(data);
+  }
+
   setHeaderDirectionArrow(field, order) {
     const elements = this.subElements.header.querySelectorAll("[data-id]");
 
@@ -140,7 +192,8 @@ export default class SortableTable {
   }
 
   addEventListners() {
-    this.subElements.header.addEventListener('pointerdown', this.onClickSort)
+    this.subElements.header.addEventListener('pointerdown', this.onClickSort);
+    document.addEventListener('scroll', this.onWindowScroll);
   }
 
   getTableHeader() {
@@ -195,13 +248,13 @@ export default class SortableTable {
   }
 
   getSubElements(element) {
-    const result = {};
-    const elements = element.querySelectorAll('[data-elem]');
+    const elements = element.querySelectorAll('[data-element]');
 
-    for (const subElement of elements) {
-      const name = subElement.dataset.elem;
-      result[name] = subElement;
-    }
+    const result = [...elements].reduce((accum, subElement) => {
+      accum[subElement.dataset.element] = subElement;
+
+      return accum;
+    }, {});
 
     return result;
   }
