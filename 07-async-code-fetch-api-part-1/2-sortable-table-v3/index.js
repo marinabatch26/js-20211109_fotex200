@@ -112,7 +112,7 @@ export default class SortableTable {
     const end = start + this.step;
     const data = await this.loadData(id, order, start, end);
 
-    this.getTableBody(data);
+    this.renderRows(data);
   }
 
   sortData(id, order) {
@@ -156,7 +156,7 @@ export default class SortableTable {
 
     const data = await this.loadData(id, order, this.start, this.end);
 
-    this.getTableBody(data);
+    this.renderRows(data);
     this.addEventListners();
   }
 
@@ -222,7 +222,7 @@ export default class SortableTable {
 
   getTableBody(data) {
     this.data = data;
-    this.subElements.body.innerHTML = data.map((productData) => {
+    return data.map((productData) => {
       return `
         <a href="#" class="sortable-table__row">
           ${this.getTableBodyCell(productData)}
